@@ -63,7 +63,7 @@ router.delete('/delete/:id',async function(req,res){
 })
 
 //update
-router.patch('/updatePic',upload.single('pic'),async function(req,res){
+router.patch('/updatePic',authentication,upload.single('pic'),async function(req,res){
     try{
         if(!req.file){
             return res.status(400).json('Img not found')
