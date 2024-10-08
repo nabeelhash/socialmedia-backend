@@ -63,7 +63,7 @@ router.delete('/delete/:id',async function(req,res){
 })
 
 //update
-router.patch('/updatePic',authentication,upload.single('pic'),async function(req,res){
+router.patch('/updatePic',upload.single('pic'),async function(req,res){
     try{
         if(!req.file){
             return res.status(400).json('Img not found')
@@ -76,9 +76,10 @@ router.patch('/updatePic',authentication,upload.single('pic'),async function(req
     }
     catch(error){
         console.error('Error updating picture:', error); // Log the error for debugging
-        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+        return res.status(400).json({ message: 'Internal Server Error', error: error.message });
     }
 })
+
 
 //coverpic
 router.patch('/coverPic',authentication,upload.single('pic'),async function(req,res){
@@ -265,13 +266,6 @@ router.get('/blocklist',authentication,async function(req,res){
         return res.status(400).json(error)
     }
 })
-
-
-
-
-
-
-
 
 
 module.exports= router
