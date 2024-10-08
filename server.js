@@ -15,7 +15,7 @@ const Conversation = require('./routes/convoRoute')
 
 app.use(express.json())
 app.use(cors({
-    origin: 'http://localhost:3000', // Replace with your client's origin
+    origin: 'https://socialmedia-frontend-eta.vercel.app', // Replace with your client's origin
     credentials: true
 }));
 app.use(cookieParser())
