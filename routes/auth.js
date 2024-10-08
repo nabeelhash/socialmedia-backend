@@ -70,7 +70,10 @@ router.post('/login', loginValidate, async function (req, res) {
             return res.status(400).json('Password is Incorrect')
         }
         const token = jwt.sign({ id: checkUser._id }, process.env.KEY, { expiresIn: '5h' })
-        res.cookie('token', token)
+        res.cookie('token', token, {
+            sameSite: 'None',
+            secure: true
+        });
         res.status(200).json({ message: "Login successful", checkUser, token })
     }
     catch (error) {
