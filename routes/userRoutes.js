@@ -75,7 +75,8 @@ router.patch('/updatePic',authentication,upload.single('pic'),async function(req
         res.status(200).json(updatePic)
     }
     catch(error){
-        return res.status(400).json(error)
+        console.error('Error updating picture:', error); // Log the error for debugging
+        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 })
 

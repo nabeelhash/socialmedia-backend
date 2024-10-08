@@ -185,7 +185,7 @@ router.get('/', function (req, res) {
 })
 
 
-router.get('/check', authentication, adminRole, function (req, res) {
+router.get('/check', authentication, function (req, res) {
     res.json(`Hello user ${req.userId}`)
 })
 
