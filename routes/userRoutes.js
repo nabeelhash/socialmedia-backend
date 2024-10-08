@@ -65,6 +65,8 @@ router.delete('/delete/:id',async function(req,res){
 //update
 router.patch('/updatePic',authentication,upload.single('pic'),async function(req,res){
     try{
+        console.log('User ID:', req.userId); // Log user ID
+        console.log('Uploaded File:', req.file); // Log the uploaded file details
         if(!req.file){
             return res.status(400).json('Img not found')
         }
