@@ -95,9 +95,8 @@ router.patch('/updatePic',authentication,upload.single('pic'),async function(req
 })
 
 
-router.post('/newPic', authentication, upload.single('pic'), async function(req, res) {
+router.post('/newPic', upload.single('pic'), async function(req, res) {
     try {
-        console.log('User ID:', req.userId); // Log user ID
         console.log('Uploaded File:', req.file); // Log the uploaded file details
 
         if (!req.file) {
