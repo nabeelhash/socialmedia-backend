@@ -1,9 +1,10 @@
-const dataUrlParser = require('dataurl'); // Import the dataurl module directly
+const DataUriParser = require('datauri/parser.js')
 const path = require('path');
 
-const getParser = function(file) {
-    const ext = path.extname(file.originalname);
-    return dataUrlParser.format(ext, file.buffer); // Call format directly without 'new'
-};
+const getParser = function(file){
+    const parser = new DataUriParser()
+    const ext = path.extname(file.originalname)
+    return parser.format(ext,file.buffer)
+}
 
-module.exports = getParser;
+module.exports = getParser

@@ -72,11 +72,16 @@ router.patch('/updatePic',authentication,upload.single('pic'),async function(req
         if(!req.file){
             return res.status(400).json('Img not found')
         }
-        const parser = getParser(req.file)
-        console.log(parser)
-        const response =await cloudinary.uploader.upload(parser.content,{
+        const dataUrl = getParser(req.file);
+        console.log('Parsed Content:', dataUrl);
+
+        if (!dataUrl || !dataUrl.content) {
+            return res.status(400).json('Invalid image data');
+        }
+
+        const response = await cloudinary.uploader.upload(dataUrl, {
             folder: "profileImage"
-        })
+        });
         const updatePic =await User.findByIdAndUpdate(
             req.userId,
             {profileImage: response.secure_url},
