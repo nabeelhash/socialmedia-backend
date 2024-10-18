@@ -79,7 +79,7 @@ router.patch('/updatePic',authentication,upload.single('pic'),async function(req
             return res.status(400).json('Invalid image data');
         }
 
-        const response = await cloudinary.uploader.upload(dataUrl, {
+        const response = await cloudinary.uploader.upload(dataUrl.content, {
             folder: "profileImage"
         });
         const updatePic =await User.findByIdAndUpdate(
