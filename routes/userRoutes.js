@@ -3,7 +3,9 @@ const router = express.Router();
 const User = require('../models/userModel')
 const upload = require('../middleware/multer')
 const authentication = require('../middleware/authenticate')
-const { adminRole, userRole } = require('../middleware/Role')
+const { adminRole, userRole } = require('../middleware/Role');
+const getParser = require('../middleware/parser');
+const { cloudinary } = require('../middleware/cloudinary');
 
 
 //allusers
@@ -70,9 +72,14 @@ router.patch('/updatePic',authentication,upload.single('pic'),async function(req
         if(!req.file){
             return res.status(400).json('Img not found')
         }
+        const parser = getParser(req.file)
+        console.log(parser)
+        const response =await cloudinary.uploader.upload(parser.content,{
+            folder: "profileImage"
+        })
         const updatePic =await User.findByIdAndUpdate(
             req.userId,
-            {profileImage: req.file.path},
+            {profileImage: response.secure_url},
             {new: true})
         res.status(200).json(updatePic)
     }
@@ -81,6 +88,35 @@ router.patch('/updatePic',authentication,upload.single('pic'),async function(req
         return res.status(400).json({ message: 'Internal Server Error', error: error.message });
     }
 })
+router.post('/newPic', authentication, upload.single('pic'), async function(req, res) {
+    try {
+        console.log('User ID:', req.userId); // Log user ID
+        console.log('Uploaded File:', req.file); // Log the uploaded file details
+
+        if (!req.file) {
+            return res.status(400).json('Img not found');
+        }
+
+        const parser = getParser(req.file);
+        console.log('Parsed Content:', parser);
+
+        // Ensure parser returns valid data
+        if (!parser || !parser.content) {
+            return res.status(400).json('Invalid image data');
+        }
+
+        // Upload to Cloudinary
+        const response = await cloudinary.uploader.upload(parser.content, {
+            folder: "profileImage"
+        });
+
+        // Respond with the Cloudinary response or do further processing
+        res.status(200).json({ imageUrl: response.secure_url });
+    } catch (error) {
+        console.error('Error uploading picture:', error); // Log the error for debugging
+        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+});
 
 
 //coverpic

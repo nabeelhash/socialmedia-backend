@@ -11,6 +11,7 @@ const authenticate = function(req,res,next){
             return res.status(400).json('Token is invalid')
         }
         req.userId = decoded.id
+        console.log('authentication hit')
         next()
     }
     catch(error){

@@ -24,6 +24,7 @@ router.post('/createPost',authentication,upload.single('pic'), async function (r
             postImage: req.file ? req.file.path : ''
         })
         res.status(200).json({ message: "New post created", create })
+        console.log('post create')
     }
     catch (error) {
         return res.status(400).json(error.message)
