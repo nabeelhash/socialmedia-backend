@@ -5,7 +5,7 @@ const upload = require('../middleware/multer')
 const authentication = require('../middleware/authenticate')
 const { adminRole, userRole } = require('../middleware/Role');
 const getParser = require('../middleware/parser');
-const { cloudinary } = require('../middleware/cloudinary');
+const  cloudinary  = require('../middleware/cloudinary');
 
 
 //allusers
@@ -73,7 +73,7 @@ router.patch('/updatePic',authentication,upload.single('pic'),async function(req
             return res.status(400).json('Img not found')
         }
         const dataUrl = getParser(req.file);
-        console.log('Parsed Content:', dataUrl);
+        console.log('Parsed Content:', dataUrl.content);
 
         if (!dataUrl || !dataUrl.content) {
             return res.status(400).json('Invalid image data');
@@ -93,6 +93,8 @@ router.patch('/updatePic',authentication,upload.single('pic'),async function(req
         return res.status(400).json({ message: 'Internal Server Error', error: error.message });
     }
 })
+
+
 router.post('/newPic', authentication, upload.single('pic'), async function(req, res) {
     try {
         console.log('User ID:', req.userId); // Log user ID
