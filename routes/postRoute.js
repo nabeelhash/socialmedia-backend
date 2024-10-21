@@ -16,20 +16,24 @@ router.post('/createPost',authentication,upload.single('pic'), async function (r
         if (!currentUser) {
             return res.status(400).json('current User dont exist')
         }
-        // if(!req.file){
-        //     return res.status(400).json('Img not found')
-        // }
-        const dataUrl = getParser(req.file);
-        console.log('Parsed Content:', dataUrl.content);
+        let postImageUrl = '';
 
-        const response = await cloudinary.uploader.upload(dataUrl.content, {
-            folder: "postImage"
-        });
+        // Check if an image was uploaded
+        if (req.file) {
+            const dataUrl = getParser(req.file);
+            console.log('Parsed Content:', dataUrl.content);
+
+            const response = await cloudinary.uploader.upload(dataUrl.content, {
+                folder: "postImage"
+            });
+
+            postImageUrl = response ? response.secure_url : '';
+        }
         
         const create = await Post.create({
             author: req.userId,
             description: req.body.description,
-            postImage: response ? response.secure_url : ''
+            postImage: postImageUrl
         })
         res.status(200).json({ message: "New post created", create })
         console.log('post create')
@@ -38,6 +42,8 @@ router.post('/createPost',authentication,upload.single('pic'), async function (r
         return res.status(400).json(error.message)
     }
 })
+
+
 //
 
 
@@ -86,19 +92,23 @@ router.delete('/deletePost/:id',authentication, async function (req, res) {
 router.patch('/updatePost/:id', upload.single('pic'),async function (req, res) {
     try {
         
-        // if (!req.file) {
-        //     return res.status(400).json('Img not found')
-        // }
-        const dataUrl = getParser(req.file);
-        console.log('Parsed Content:', dataUrl.content);
+        let postImageUrl = '';
 
-        const response = await cloudinary.uploader.upload(dataUrl.content, {
-            folder: "postImage"
-        });
+        // Check if an image was uploaded
+        if (req.file) {
+            const dataUrl = getParser(req.file);
+            console.log('Parsed Content:', dataUrl.content);
+
+            const response = await cloudinary.uploader.upload(dataUrl.content, {
+                folder: "postImage"
+            });
+
+            postImageUrl = response ? response.secure_url : '';
+        }
         
         const updatePost = await Post.findByIdAndUpdate(req.params.id,{
             description: req.body.description,
-            postImage: response ? response.secure_url : ''
+            postImage: postImageUrl
         },{new: true})
         res.status(200).json(updatePost)
     }
