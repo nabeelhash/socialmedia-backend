@@ -19,10 +19,17 @@ router.post('/createPost',authentication,upload.single('pic'), async function (r
         // if(!req.file){
         //     return res.status(400).json('Img not found')
         // }
+        const dataUrl = getParser(req.file);
+        console.log('Parsed Content:', dataUrl.content);
+
+        const response = await cloudinary.uploader.upload(dataUrl.content, {
+            folder: "postImage"
+        });
+        
         const create = await Post.create({
             author: req.userId,
             description: req.body.description,
-            postImage: req.file ? req.file.path : ''
+            postImage: response ? response.secure_url : ''
         })
         res.status(200).json({ message: "New post created", create })
         console.log('post create')
@@ -85,12 +92,8 @@ router.patch('/updatePost/:id', upload.single('pic'),async function (req, res) {
         const dataUrl = getParser(req.file);
         console.log('Parsed Content:', dataUrl.content);
 
-        if (!dataUrl || !dataUrl.content) {
-            return res.status(400).json('Invalid image data');
-        }
-
         const response = await cloudinary.uploader.upload(dataUrl.content, {
-            folder: "profileImage"
+            folder: "postImage"
         });
         
         const updatePost = await Post.findByIdAndUpdate(req.params.id,{
