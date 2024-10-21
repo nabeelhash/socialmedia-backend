@@ -95,35 +95,6 @@ router.patch('/updatePic',authentication,upload.single('pic'),async function(req
 })
 
 
-router.post('/newPic', upload.single('pic'), async function(req, res) {
-    try {
-        console.log('Uploaded File:', req.file); // Log the uploaded file details
-
-        if (!req.file) {
-            return res.status(400).json('Img not found');
-        }
-
-        const parser = getParser(req.file);
-        console.log('Parsed Content:', parser);
-
-        // Ensure parser returns valid data
-        if (!parser || !parser.content) {
-            return res.status(400).json('Invalid image data');
-        }
-
-        // Upload to Cloudinary
-        const response = await cloudinary.uploader.upload(parser.content, {
-            folder: "profileImage"
-        });
-
-        // Respond with the Cloudinary response or do further processing
-        res.status(200).json({ imageUrl: response.secure_url });
-    } catch (error) {
-        console.error('Error uploading picture:', error); // Log the error for debugging
-        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
-    }
-});
-
 
 //coverpic
 router.patch('/coverPic',authentication,upload.single('pic'),async function(req,res){
@@ -131,9 +102,19 @@ router.patch('/coverPic',authentication,upload.single('pic'),async function(req,
         if(!req.file){
             return res.status(400).json('Img not found')
         }
+        const dataUrl = getParser(req.file);
+        console.log('Parsed Content:', dataUrl.content);
+
+        if (!dataUrl || !dataUrl.content) {
+            return res.status(400).json('Invalid image data');
+        }
+
+        const response = await cloudinary.uploader.upload(dataUrl.content, {
+            folder: "profileImage"
+        });
         const updatePic =await User.findByIdAndUpdate(
             req.userId,
-            {coverImage: req.file.path},
+            {coverImage: response.secure_url},
             {new: true})
         res.status(200).json(updatePic)
     }
