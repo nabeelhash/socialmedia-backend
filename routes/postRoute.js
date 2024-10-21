@@ -6,7 +6,8 @@ const User = require('../models/userModel')
 const upload = require('../middleware/multer')
 const authentication = require('../middleware/authenticate')
 const { adminRole, userRole } = require('../middleware/Role')
-
+const getParser = require('../middleware/parser');
+const  cloudinary  = require('../middleware/cloudinary');
 
 //create
 router.post('/createPost',authentication,upload.single('pic'), async function (req, res) {
@@ -81,10 +82,20 @@ router.patch('/updatePost/:id', upload.single('pic'),async function (req, res) {
         // if (!req.file) {
         //     return res.status(400).json('Img not found')
         // }
+        const dataUrl = getParser(req.file);
+        console.log('Parsed Content:', dataUrl.content);
+
+        if (!dataUrl || !dataUrl.content) {
+            return res.status(400).json('Invalid image data');
+        }
+
+        const response = await cloudinary.uploader.upload(dataUrl.content, {
+            folder: "profileImage"
+        });
         
         const updatePost = await Post.findByIdAndUpdate(req.params.id,{
             description: req.body.description,
-            postImage: req.file ? req.file.path : ''
+            postImage: response ? response.secure_url : ''
         },{new: true})
         res.status(200).json(updatePost)
     }

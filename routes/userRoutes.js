@@ -110,7 +110,7 @@ router.patch('/coverPic',authentication,upload.single('pic'),async function(req,
         }
 
         const response = await cloudinary.uploader.upload(dataUrl.content, {
-            folder: "profileImage"
+            folder: "coverImage"
         });
         const updatePic =await User.findByIdAndUpdate(
             req.userId,
